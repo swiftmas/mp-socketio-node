@@ -243,9 +243,9 @@ document.body.addEventListener("keydown", function(event) {
 
 ////// GET player movement data //////////////
 socket.on('players', function(data){
-	//console.log(data.enemies);
+	//console.log(data.npcs);
 	moveplayers(data.players);
-	movenpcs(data.enemies);
+	movenpcs(data.npcs);
 });
 
 
