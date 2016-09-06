@@ -1,14 +1,38 @@
-
+//// SETUP VARS ////////////////////////////
 var http = require("http");
 var url = require('url');
 var fs = require('fs');
 var io = require('socket.io');
-collmap = require("./coll.json");
-var npcs = require('./npc.js')
+var npcs = require('./npc.js');
+var globals = require('./globals.js');
+var combat = require('./combat.js');
+
 
 var server = http.createServer(function(request, response){
     var path = url.parse(request.url).pathname;
-
+    // STATIC STUFF ///////////////////
+    if (path.substring(0, 8) == "/static/" ) {
+        fs.readFile(__dirname + path, function(error, data){
+            if (error){
+                response.writeHead(404);
+                response.write("o0ps this doesn't exist - 404");
+                response.end();
+            }
+            else{
+                if (path.slice(-3) == "png"){
+                    response.writeHead(200, {"Content-Type": "image/png"});
+                };
+                if (path.slice(-3) == "jpg"){
+                    response.writeHead(200, {"Content-Type": "image/jpg"});
+                };
+                if (path.slice(-2) == "js"){
+                    response.writeHead(200, {"Content-Type": "text/html"});
+                };
+                response.write(data, "utf8");
+                response.end();
+            }
+        });
+    } else {
     switch(path){
         case '/':
             response.writeHead(200, {'Content-Type': 'text/html'});
@@ -57,19 +81,39 @@ var server = http.createServer(function(request, response){
                 }
             });
             break;
+	case '/40x40collmap.jpg':
+            fs.readFile(__dirname + path, function(error, data){
+                if (error){
+                    response.writeHead(404);
+                    response.write("opps this doesn't exist - 404");
+                    response.end();
+                }
+                else{
+                    response.writeHead(200, {"Content-Type": "image/jpg"});
+                    response.write(data, "utf8");
+                    response.end();
+                }
+            });
+            break;
         default:
             response.writeHead(404);
             response.write("opps this doesn't exist - 404");
             response.end();
             break;
     }
+    };
 });
 
 server.listen(8080);
 
+
+
+
+
 ///COOL STUFF ///////////////
 ////VARS////
-gamedata = {"players": {}, "attacks": {}, "npcs": {"enemy1": {"pos": "20.2", "team": "blue"}}};
+var coredata = globals.coredata;
+var collmap = globals.collmap;
 
 
 
@@ -79,8 +123,10 @@ gamedata = {"players": {}, "attacks": {}, "npcs": {"enemy1": {"pos": "20.2", "te
 
 //// MAIN UPDATE ///////////
 setInterval(function() {
+    oldtime = (new Date).getTime();
 	npcs.npccontroller();
-}, 600)
+    console.log("clientdatatime = ", oldtime - (new Date).getTime());
+}, 512)
 
 
 ///// LISTENERS ////// NEEDS CLEANED ////////////////
@@ -94,15 +140,15 @@ listener.sockets.on('connection', function(socket){
 
 ///This is basically the update function /////////
   setInterval(function(){
-        socket.emit('players', gamedata);
-    }, 10); 
+        socket.emit('players', coredata);      
+    }, 16); 
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
     process.stdout.write(data[1]+" commit to ->");
-    console.log(data[0], gamedata.players[data[0]].pos);
-    gamedata.players[data[0]].pos = data[1];
-    gamedata.players[data[0]].dir = data[2];
+    console.log(data[0], coredata.players[data[0]].pos);
+    coredata.players[data[0]].pos = data[1];
+    coredata.players[data[0]].dir = data[2];
   });
 
 // This listens for new players ////////
@@ -110,53 +156,23 @@ listener.sockets.on('connection', function(socket){
     console.log(data);
     for (var key in data){
       if (data.hasOwnProperty(key)) {
-        gamedata.players[key] = data[key];
+        coredata.players[key] = data[key];
+        console.log(coredata.players[key])
       };
     };
   });
 
 // Listens for attacks ////// !!!!!! NEEDS FUNCTION OUSIDE OF LISTENER  !!!!!!!!///////////////////////////
   socket.on('attacks', function(data) {
-    console.log(data[0] + " attacked");
-    gamedata.attacks["a" + data[0]] = gamedata.players[data[0]].pos;
-    atdir = gamedata.players[data[0]].dir
-    atorig = gamedata.players[data[0]].pos.split(".")
-    if (atdir == "up"){
-    	nx = parseInt(atorig[0]) 
-    	ny = parseInt(atorig[1]) - 1 
-    	atpos = nx + "." + ny
-    } else if (atdir == "down") {
-		nx = parseInt(atorig[0]) 
-    	ny = parseInt(atorig[1]) + 1
-    	atpos = nx + "." + ny
-    } else if (atdir == "left") {
-    	nx = parseInt(atorig[0]) - 1 
-    	ny = parseInt(atorig[1]) 
-    	atpos = nx + "." + ny
-    } else if (atdir == "right") {
-    	nx = parseInt(atorig[0]) + 1 
-    	ny = parseInt(atorig[1]) 
-    	atpos = nx + "." + ny
-    };
-    gp = gamedata.players
-    for (var key in gamedata.players){
-    	if (gp.hasOwnProperty(key)) {
-    		if (gp[key].pos == atpos && gp[key].team !== gp[data[0]].team){
-				gp[key].pos = "2.2"
-				console.log('WORKED!')
-    		} else if (gp[key].pos == gp[data[0]].pos && gp[key].team !== gp[data[0]].team) {
-				gp[key].pos = "2.2"
-    		};
-    	};
-    };
-    console.log(atorig,atdir,atpos, gp);
+    combat.attack(data[0], "players");
+    
   });
-
-
 // Listens for disconnects 
   socket.on('disconnect', function() {
     console.log(this.id + "Disconnected");
-    cleanid = this.id.substring(2);
-    delete gamedata.players["p" + cleanid];
+    var cleanid = this.id.substring(2);
+    if (typeof coredata.players["p"+cleanid] !== undefined){
+        delete coredata.players["p" + cleanid];
+    };
   }); 
 });

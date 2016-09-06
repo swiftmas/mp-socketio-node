@@ -6,9 +6,19 @@ var socket = io.connect();
 var xwin = window.innerWidth / 2;
 var ywin = window.innerHeight / 2;
 var userplayer = null;
+var coredata = {};
 
 //// THROTTLES ////////
-var throttlekeys = 0 //// user keyboard input
+var redknightup = new Image();
+redknightup.src = "/static/red-knight-up.png";
+var redknightdown = new Image();
+redknightdown.src = "/static/red-knight-down.png";
+var redknightleft = new Image();
+redknightleft.src = "/static/red-knight-left.png";
+var redknightright = new Image();
+redknightright.src = "/static/red-knight-right.png";
+
+
 
 //Utility Functoins //////////////////////////////////////////
 
@@ -40,7 +50,7 @@ function cco(axis, location){
 function add_player(team){
 	playername = "p" + socket.io.engine.id;
 	newplayerdata = {};
-	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "team": team};
+	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "team": team, "origin": "2.2"};
 	console.log(newplayerdata);
 	userplayer = playername;
 	elem = document.getElementById("chooseteam");
@@ -49,46 +59,45 @@ function add_player(team){
 
 };
 
-function drawmap(){
-	collElements = [];
-	for (var key in json) {
-		if (json[key] == 1){
-			collElements.push(key);
+function drawplayers(data){
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    dn = data.npcs;
+    for (npc in dn){
+		if (dn.hasOwnProperty(npc)){
+            var dir = dn[npc].dir;
+            switch(dir){
+                case 'up': 
+                    console.log(dir)
+                    var redknight = redknightup; 
+                    break;
+                case 'down': 
+                    console.log(dir)
+                    var redknight = redknightdown; 
+                    break;
+                case 'left': 
+                    console.log(dir)
+                    var redknight = redknightleft; 
+                    break;    
+                case 'right': 
+                    console.log(dir)
+                    var redknight = redknightright; 
+                    break;
+            };       
+            ctx.drawImage(redknight, aco('x', dn[npc].pos.split('.')[0]) -8, aco('y', dn[npc].pos.split('.')[1]) -8);
+            ctx.fillStyle = dn[npc].team;
+            ctx.fillRect(aco('x', dn[npc].pos.split('.')[0]) -3, aco('y', dn[npc].pos.split('.')[1]) -3, 6, 6);
 		};
 	};
-	for (var i = 0; i < collElements.length; i++) {
-		ctx.fillStyle = "#e3e3e3";
-		ctx.fillRect(rco(collElements[i].split('.')[0]), rco(collElements[i].split('.')[1]), 16, 16);
+    dp = data.players;
+    for (player in dp){
+		if (dp.hasOwnProperty(player)){
+            ctx.fillStyle = dp[player].team;
+            ctx.fillRect(aco('x', dp[player].pos.split('.')[0]) -8, aco('y', dp[player].pos.split('.')[1]) -8, 16, 16);
+		};
 	};
 };
 
 
-function makePlayer(player, team, x, y) {
-	var newplayer = document.createElement('div');
-	newplayer.id = player;
-	newplayer.style.position = 'absolute';
-	newplayer.style.left = aco('x', x)+ 1 + "px";
-	newplayer.style.top = aco('y', y)+ 1 + "px";
-	newplayer.style.width = '10px';
-	newplayer.style.height = '10px';
-	newplayer.style.borderStyle = 'solid';
-	newplayer.style.borderColor = 'black';
-	newplayer.style.borderWidth = '2px 2px 2px 2px';
-	newplayer.style.backgroundColor = team;
-	document.body.appendChild(newplayer);
-};
-
-function makeNpc(npc, team, x, y) {
-	var newnpc = document.createElement('div');
-	newnpc.id = npc;
-	newnpc.style.position = 'absolute';
-	newnpc.style.left = aco('x', x)+ 1 + "px";
-	newnpc.style.top = aco('y', y)+ 1 + "px";
-	newnpc.style.width = '15px';
-	newnpc.style.height = '15px';
-	newnpc.style.backgroundColor = team;
-	document.body.appendChild(newnpc);
-};
 
 //mOVEMENT /////////////////////////////////////////
 
@@ -102,6 +111,9 @@ function getinput(e) {
     else if (e.keyCode == '78') {
     	pattack = [userplayer]; 
 		socket.emit('attacks', pattack);
+    }
+    else if (e.keyCode == '192') {
+    	console.log(coredata);
     }
     else if (e.keyCode == '83') {
         move('down', userplayer)
@@ -117,93 +129,56 @@ function getinput(e) {
 
 function move(dir, playername) {
 	if (dir == "up"){
-		x = cco('x', document.getElementById(playername).offsetLeft) 
-		y = cco('y', document.getElementById(playername).offsetTop) - 1
+		x = parseInt(coredata.players[playername].pos.split(".")[0])
+		y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1 
 		cellname = ''+x+'.'+y+''
 		console.log(x,y,cellname,json[cellname])
 		if (json[cellname] == 1) {
 			console.log('no go')
 		} else {
 				plocation = [playername, cellname, dir]
-				document.getElementById(playername).style.borderWidth = "0px 2px 2px 2px";
             	socket.emit('client_data', plocation);
 		};
 	};
 	if (dir == "down"){
-		x = cco('x', document.getElementById(playername).offsetLeft) 
-		y = cco('y', document.getElementById(playername).offsetTop) + 1
+		x = parseInt(coredata.players[playername].pos.split(".")[0]) 
+		y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
 		cellname = ''+x+'.'+y+''
 		console.log(x,y,cellname,json[cellname])
 		if (json[cellname] == 1) {
 			console.log('no go')
 		} else {
-			//document.getElementById(playername).style.top = parseInt(document.getElementById(playername).style.top) + 16 + "px";
             		plocation = [playername, cellname, dir]
-            		document.getElementById(playername).style.borderWidth = "2px 2px 0px 2px";
             		socket.emit('client_data', plocation);
 		};
 	};
 	if (dir == "left"){
-		x = cco('x', document.getElementById(playername).offsetLeft) - 1 
-		y = cco('y', document.getElementById(playername).offsetTop) 
+		x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
+		y = parseInt(coredata.players[playername].pos.split(".")[1])
 		cellname = ''+x+'.'+y+''
 		console.log(x,y,cellname,json[cellname])
 		if (json[cellname] == 1) {
 			console.log('no go')
 		} else {
-			//document.getElementById(playername).style.left = parseInt(document.getElementById(playername).style.left) - 16 + "px";
             		plocation = [playername, cellname, dir]
-            		document.getElementById(playername).style.borderWidth = "2px 2px 2px 0px";
             		socket.emit('client_data', plocation);
 		};
 	};
 	if (dir == "right"){
-		x = cco('x', document.getElementById(playername).offsetLeft) + 1 
-		y = cco('y', document.getElementById(playername).offsetTop) 
+		x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
+		y = parseInt(coredata.players[playername].pos.split(".")[1])
 		cellname = ''+x+'.'+y+''
 		console.log(x,y,cellname,json[cellname])
 		if (json[cellname] == 1) {
 			console.log('no go')
 		} else {
             		plocation = [playername, cellname, dir]
-					document.getElementById(playername).style.borderWidth = "2px 0px 2px 2px";
             		socket.emit('client_data', plocation);
 		};
 	};	
 
 };
 
-
-function moveplayers(data){
-	for (player in data){
-		if (data.hasOwnProperty(player)){
-			if (document.getElementById(player) === null) {
-				makePlayer(player, data[player].team, data[player].pos.split('.')[0], data[player].pos.split('.')[1]);
-			} else {
-			//	console.log(player, data[player].pos);
-				document.getElementById(player).style.left = aco('x', data[player].pos.split('.')[0]) + 1 + "px";
-            			document.getElementById(player).style.top = aco('y', data[player].pos.split('.')[1]) + 1 + "px";
-			};
-			if (document.getElementById(userplayer) !== null){
-				window.scrollTo(parseInt(document.getElementById(userplayer).style.left) - xwin, parseInt(document.getElementById(userplayer).style.top) - ywin)
-			};
-		};
-	};
-};
-
-function movenpcs(data){
-	for (npc in data){
-		if (data.hasOwnProperty(npc)){
-			if (document.getElementById(npc) === null) {
-				makeNpc(npc, data[npc].team, data[npc].pos.split('.')[0], data[npc].pos.split('.')[1]);
-			} else {
-			//	console.log(npc, data[npc].pos);
-				document.getElementById(npc).style.left = aco('x', data[npc].pos.split('.')[0]) + 1 + "px";
-            			document.getElementById(npc).style.top = aco('y', data[npc].pos.split('.')[1]) + 1 + "px";
-			};
-		};
-	};
-};
 
 
 
@@ -218,19 +193,20 @@ else{
     window.attachEvent('onload',startup); //IE
 };
 
+
+// old :( dont use, remove when ready
 function startup(){
 	socket.on('collmap', function(data){
 		json = data;
-		drawmap();
 	});
 };
 
 
 ///// GET PLAYER TEAM AND STUFF ////
 document.getElementById("selBlue").addEventListener("click", function(event) { add_player("blue"); });
-document.getElementById("selGreen").addEventListener("click", function(event) { add_player("Green"); });
-document.getElementById("selRed").addEventListener("click", function(event) { add_player("Red"); });
-document.getElementById("selGold").addEventListener("click", function(event) { add_player("Gold"); });
+document.getElementById("selGreen").addEventListener("click", function(event) { add_player("green"); });
+document.getElementById("selRed").addEventListener("click", function(event) { add_player("red"); });
+document.getElementById("selGold").addEventListener("click", function(event) { add_player("gold"); });
 
 
 
@@ -243,9 +219,9 @@ document.body.addEventListener("keydown", function(event) {
 
 ////// GET player movement data //////////////
 socket.on('players', function(data){
-	//console.log(data.npcs);
-	moveplayers(data.players);
-	movenpcs(data.npcs);
+	coredata = data;
+	//moveplayers(data.players);
+	drawplayers(data);
 });
 
 
