@@ -15,7 +15,12 @@
 </head>
 <body>
 
-
+    <div style="display: none;">
+        <img id="rkup" src="/static/red-knight-up.png">
+        <img id="rkdown" src="/static/red-knight-down.png">
+        <img id="rkleft" src="/static/red-knight-left.png">
+        <img id="rkright" src="/static/red-knight-right.png">
+    </div>
 
 
 <div id="chooseteam" style="position:absolute;top:65px; left:45%;">
@@ -30,7 +35,7 @@
 <canvas id='map' width="640" height="640" style="background: url('/static/40x40collmap.jpg')">
 </canvas>
 <p id='coor'></p> Use WASD to move and n to attack. 
-
+<p id="logger"></p>
 
 
   <script src="main.js"></script>
