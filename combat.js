@@ -38,10 +38,10 @@ function attack(attacker, npcsORplayers){
     for (var key in db){
     	if (db.hasOwnProperty(key)) {
     		if (db[key].pos == atpos && db[key].team !== at[attacker].team){
-				db[key].pos = db[key].origin
-				console.log(db[key], ' Deaded!')
+				db[key].pos = db[key].origin;
+				console.log(db[key], ' killed at ', atpos)
     		} else if (db[key].pos == at[attacker].pos && db[key].team !== at[attacker].team) {
-				db[key].pos = db[key].origin
+				db[key].pos = db[key].origin;
 				console.log(db[key], ' Deaded!')
     		};
     	};
@@ -52,10 +52,10 @@ function attack(attacker, npcsORplayers){
     for (var key in db){
     	if (db.hasOwnProperty(key)) {
     		if (db[key].pos == atpos && db[key].team !== at[attacker].team){
-				db[key].pos = db[key].origin
-				console.log(key, ' Deaded!')
+				db[key].state = "dead";
+				console.log(db[key], ' killed at ', atpos)
     		} else if (db[key].pos == at[attacker].pos && db[key].team !== at[attacker].team) {
-				db[key].pos = db[key].origin
+				db[key].state = "dead";
 				console.log(key, ' Deaded!')
     		};
     	};

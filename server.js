@@ -123,9 +123,9 @@ var collmap = globals.collmap;
 
 //// MAIN UPDATE ///////////
 setInterval(function() {
-    oldtime = (new Date).getTime();
+    //oldtime = (new Date).getTime();
 	npcs.npccontroller();
-    console.log("clientdatatime = ", oldtime - (new Date).getTime());
+    //console.log("clientdatatime = ", oldtime - (new Date).getTime());
 }, 512)
 
 
@@ -145,10 +145,12 @@ listener.sockets.on('connection', function(socket){
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
+  	if (coredata.players[data[0]].state !== "dead"){
     process.stdout.write(data[1]+" commit to ->");
     console.log(data[0], coredata.players[data[0]].pos);
     coredata.players[data[0]].pos = data[1];
     coredata.players[data[0]].dir = data[2];
+    };
   });
 
 // This listens for new players ////////

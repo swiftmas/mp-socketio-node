@@ -1,4 +1,4 @@
-//VARS -------//////////////////////////////////////////////////////////
+///VARS -------//////////////////////////////////////////////////////////
 var json = {};
 var map = document.getElementById("map");
 var ctx = map.getContext("2d");
@@ -7,16 +7,14 @@ var xwin = window.innerWidth / 2;
 var ywin = window.innerHeight / 2;
 var userplayer = null;
 var coredata = {};
+var touchdir = ["none", 0];
+var touchtimer = 0;
 
 //// THROTTLES ////////
-var redknightup = new Image();
-redknightup.src = "/static/red-knight-up.png";
-var redknightdown = new Image();
-redknightdown.src = "/static/red-knight-down.png";
-var redknightleft = new Image();
-redknightleft.src = "/static/red-knight-left.png";
-var redknightright = new Image();
-redknightright.src = "/static/red-knight-right.png";
+var redknightup = document.getElementById("rkup");
+var redknightdown = document.getElementById("rkdown");
+var redknightleft = document.getElementById("rkleft");
+var redknightright = document.getElementById("rkright");
 
 
 
@@ -64,28 +62,26 @@ function drawplayers(data){
     dn = data.npcs;
     for (npc in dn){
 		if (dn.hasOwnProperty(npc)){
-            var dir = dn[npc].dir;
-            switch(dir){
-                case 'up': 
-                    console.log(dir)
-                    var redknight = redknightup; 
-                    break;
-                case 'down': 
-                    console.log(dir)
-                    var redknight = redknightdown; 
-                    break;
-                case 'left': 
-                    console.log(dir)
-                    var redknight = redknightleft; 
-                    break;    
-                case 'right': 
-                    console.log(dir)
-                    var redknight = redknightright; 
-                    break;
-            };       
-            ctx.drawImage(redknight, aco('x', dn[npc].pos.split('.')[0]) -8, aco('y', dn[npc].pos.split('.')[1]) -8);
-            ctx.fillStyle = dn[npc].team;
-            ctx.fillRect(aco('x', dn[npc].pos.split('.')[0]) -3, aco('y', dn[npc].pos.split('.')[1]) -3, 6, 6);
+            if (dn[npc].state == "normal"){
+                var dir = dn[npc].dir;
+                switch(dir){
+                    case 'up': 
+                        var redknight = redknightup; 
+                        break;
+                    case 'down': 
+                        var redknight = redknightdown; 
+                        break;
+                    case 'left': 
+                        var redknight = redknightleft; 
+                        break;    
+                    case 'right': 
+                        var redknight = redknightright; 
+                        break;
+                };       
+                ctx.drawImage(redknight, aco('x', dn[npc].pos.split('.')[0]) -8, aco('y', dn[npc].pos.split('.')[1]) -8);
+                ctx.fillStyle = dn[npc].team;
+                ctx.fillRect(aco('x', dn[npc].pos.split('.')[0]) -3, aco('y', dn[npc].pos.split('.')[1]) -3, 6, 6);
+            };
 		};
 	};
     dp = data.players;
@@ -222,6 +218,12 @@ socket.on('players', function(data){
 	coredata = data;
 	//moveplayers(data.players);
 	drawplayers(data);
+	if (userplayer !== null){
+		var dn = data.players[userplayer].pos.split('.');
+		var winw = parseInt(window.innerWidth) / 2;
+		var winh = parseInt(window.innerHeight) / 2;
+		window.scrollTo(aco('x', dn[0]) - winw, aco('y', dn[1]) - winh);
+	};
 });
 
 
@@ -229,22 +231,71 @@ socket.on('players', function(data){
 
 
 ////// UTILITY EVENTS //////////////////////////
-document.ontouchmove = function(event){
-    event.preventDefault();
-}
+
 
 ///// Touch device controlls ///////////////////////
 document.getElementById("map").addEventListener("touchstart", function(event) {
-	pattack = [userplayer]; 
+	//event.preventDefault();
+	var pattack = [userplayer]; 
 	socket.emit('attacks', pattack);
-});
-document.getElementById("map").addEventListener("touchmove", function(event) {
-  var x = Math.ceil((event.pageX - document.getElementById("map").offsetLeft) / 16);
-  var y = Math.ceil((event.pageY - document.getElementById("map").offsetTop) / 16);
-    if (y < 10){move('up',userplayer)
-    } else if (y > 30){move('down',userplayer)};
-    if (x > 30){move('right',userplayer)
-    } else if (x < 10){move('left',userplayer)};
-  var coor = "Coordinates: (" + x + "," + y + ")";
-  document.getElementById("coor").innerHTML = coor;;
-});
+	tstarx = Math.ceil((event.pageX));
+ 	tstary = Math.ceil((event.pageY));
+	touchdown = true;
+	initialtouch = true;
+	document.getElementById("logger").innerHTML = initialtouch
+}, false);
+
+//document.ontouchmove = function(event){event.preventDefault();};
+
+document.addEventListener("touchmove", function(event) {	
+	event.preventDefault();
+	tmovx = Math.ceil((event.pageX));
+ 	tmovy = Math.ceil((event.pageY));
+ 	if (initialtouch == true){
+ 		getswipedir(tmovx, tmovy);
+ 		initialtouch = false;
+ 		document.getElementById("logger").innerHTML = initialtouch
+ 	};
+ 	if (Date.now() > touchtimer + 200){
+		getswipedir(tmovx, tmovy);
+		touchtimer = Date.now();
+	};
+}, false);
+
+
+function getswipedir(x, y) {
+	var dirlength = [];
+    if (y > tstary + 5){ 
+    	var ddist = y - tstary;
+    	dirlength.push(["down", ddist])
+    };
+    if (y < tstary - 5){
+    	var udist = tstary - y;
+    	dirlength.push(["up", udist])
+    };
+    if (x > tstarx + 5 ){
+    	var rdist = x - tstarx;
+    	dirlength.push(["right", rdist])
+    };
+    if (x < tstarx - 5){
+    	var ldist = tstarx - x;
+    	dirlength.push(["left", ldist])
+    };
+    var top = ["none", 0]; 
+    if (dirlength.length > 1){
+    	for (var i = 0; i < dirlength.length; i++ ){
+    		if (dirlength[i][1] > top[1]){
+    			top = dirlength[i];
+    			touchdir = top[0];
+    		};
+    	};
+    	move(top[0], userplayer);
+    } else if (dirlength.length == 1) {
+    	top = dirlength[0];
+    	touchdir = top[0]
+    	move(top[0], userplayer);
+    };
+  
+  	//var coor = "Coordinates: (" + top[0] + ")";
+  	document.getElementById("coor").innerHTML = touchdir;
+};
