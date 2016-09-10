@@ -7,11 +7,24 @@
   <title>jscripttest</title>
   <meta name="description" content="jscripttest">
   <meta name="author" content="SitePoint">
+  <meta name="viewport" content="width=device-width, initial-scale=1.5">
   <script src="/socket.io/socket.io.js"></script>
   <link rel="stylesheet" href="style.css">
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
   <![endif]-->
+<style> 
+canvas, img, body {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+</style>
+
+
 </head>
 <body>
 
@@ -23,7 +36,7 @@
     </div>
 
 
-<div id="chooseteam" style="position:absolute;top:65px; left:45%;">
+<div id="chooseteam" style="position:absolute;top:5px; left:4%;">
 	<div id="selBlue" style="display: inline-block; height:64px; width: 64px; background-color:Blue"></div>
 	<div id="selGreen" style="display: inline-block; height:64px; width: 64px; background-color:Green"></div> 
 	<br>

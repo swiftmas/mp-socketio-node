@@ -13,6 +13,7 @@ function attack(attacker, npcsORplayers){
     // second argument, npc or player is the attribute of the attacker, not whats being attacked.
     console.log(attacker + " attacked");
     at = coredata[npcsORplayers];
+    var damage = 50;
     //coredata.attacks["a" + attacker] = at[attacker].pos;
     atdir = at[attacker].dir;
     atorig = at[attacker].pos.split(".");
@@ -38,11 +39,19 @@ function attack(attacker, npcsORplayers){
     for (var key in db){
     	if (db.hasOwnProperty(key)) {
     		if (db[key].pos == atpos && db[key].team !== at[attacker].team){
+			db[key].health = db[key].health - damage;
+			if (db[key].health <= 0){	
 				db[key].pos = db[key].origin;
+				db[key].health = 100;
 				console.log(db[key], ' killed at ', atpos)
+			};
     		} else if (db[key].pos == at[attacker].pos && db[key].team !== at[attacker].team) {
-				db[key].pos = db[key].origin;
-				console.log(db[key], ' Deaded!')
+			db[key].health = db[key].health - damage; 
+                        if (db[key].health <= 0){
+                                db[key].pos = db[key].origin;
+                                db[key].health = 100;
+                                console.log(db[key], ' killed at ', atpos)
+                        };
     		};
     	};
     };
@@ -52,14 +61,18 @@ function attack(attacker, npcsORplayers){
     for (var key in db){
     	if (db.hasOwnProperty(key)) {
     		if (db[key].pos == atpos && db[key].team !== at[attacker].team){
+			db[key].health = db[key].health - damage;
+                        if (db[key].health <= 0){
 				db[key].state = "dead";
 				console.log(db[key], ' killed at ', atpos)
+			};
     		} else if (db[key].pos == at[attacker].pos && db[key].team !== at[attacker].team) {
-				db[key].state = "dead";
-				console.log(key, ' Deaded!')
+			db[key].health = db[key].health - damage;
+                        if (db[key].health <= 0){
+                                db[key].state = "dead";
+                                console.log(db[key], ' killed at ', atpos)
+                        };
     		};
     	};
     };
-    
-    
 };

@@ -125,6 +125,7 @@ var collmap = globals.collmap;
 setInterval(function() {
     //oldtime = (new Date).getTime();
 	npcs.npccontroller();
+	npcs.alerttimedown();
     //console.log("clientdatatime = ", oldtime - (new Date).getTime());
 }, 512)
 

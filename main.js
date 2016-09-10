@@ -48,7 +48,7 @@ function cco(axis, location){
 function add_player(team){
 	playername = "p" + socket.io.engine.id;
 	newplayerdata = {};
-	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "team": team, "origin": "2.2"};
+	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "health": 100, "alerttimer": 0, "team": team, "origin": "2.2"};
 	console.log(newplayerdata);
 	userplayer = playername;
 	elem = document.getElementById("chooseteam");
@@ -265,19 +265,19 @@ document.addEventListener("touchmove", function(event) {
 
 function getswipedir(x, y) {
 	var dirlength = [];
-    if (y > tstary + 5){ 
+    if (y > tstary + 2){ 
     	var ddist = y - tstary;
     	dirlength.push(["down", ddist])
     };
-    if (y < tstary - 5){
+    if (y < tstary - 2){
     	var udist = tstary - y;
     	dirlength.push(["up", udist])
     };
-    if (x > tstarx + 5 ){
+    if (x > tstarx + 2){
     	var rdist = x - tstarx;
     	dirlength.push(["right", rdist])
     };
-    if (x < tstarx - 5){
+    if (x < tstarx - 2){
     	var ldist = tstarx - x;
     	dirlength.push(["left", ldist])
     };
