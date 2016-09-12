@@ -255,42 +255,37 @@ function moveNpcTo(npc, tarx, tary){
 	var npcpos = coredata.npcs[npc].pos.split(".");
 	var npcx = npcpos[0];
 	var npcy = npcpos[1];
-	if (npcx == tarx){
-		var heading = 0;
-	} else if (npcy == tary) {
-		var heading = 1;
-	} else {
-		var heading = Math.floor((Math.random() * 2));
-	}
+	var newcoords = [];
 	
-	if (heading == 1){
-		if (npcx > tarx) {
-			var newcoords = (parseInt(npcx)-1)+"."+npcy;
-			if (collmap[newcoords] == 0){
-			coredata.npcs[npc].pos = newcoords;
-            coredata.npcs[npc].dir = "left";
-			};
-		} else if (npcx < tarx) {
-			var newcoords = (parseInt(npcx)+1)+"."+npcy;
-			if (collmap[newcoords] == 0){
-			coredata.npcs[npc].pos = newcoords;
-            coredata.npcs[npc].dir = "right";
-			};
+	if (npcx > tarx) {
+		var newcoord = (parseInt(npcx)-1)+"."+npcy;
+		if (collmap[newcoord] == 0){
+                        newcoords[newcoords.length] = new Array (newcoord, "left");
+                };
+	} else if (npcx < tarx) {
+		var newcoord = (parseInt(npcx)+1)+"."+npcy;
+		if (collmap[newcoord] == 0){
+			newcoords[newcoords.length] = new Array (newcoord, "right");
 		};
-	} else {
-		if (npcy > tary) {
-			var newcoords = npcx+"."+(parseInt(npcy)-1);
-			if (collmap[newcoords] == 0){
-			coredata.npcs[npc].pos = newcoords;
-            coredata.npcs[npc].dir = "up";
-			};
-		} else if (npcy < tary) {
-			var newcoords = npcx+"."+(parseInt(npcy)+1);
-			if (collmap[newcoords] == 0){
-			coredata.npcs[npc].pos = newcoords;
-            coredata.npcs[npc].dir = "down";
-			};
+	};
+	if (npcy > tary) {
+		var newcoord = npcx+"."+(parseInt(npcy)-1);
+		if (collmap[newcoord] == 0){
+			newcoords[newcoords.length] = new Array (newcoord, "up");
 		};
+	} else if (npcy < tary) {
+		var newcoord = npcx+"."+(parseInt(npcy)+1);
+		if (collmap[newcoord] == 0){
+			newcoords[newcoords.length] = new Array (newcoord, "down");
+		};
+	};
+
+	if (newcoords.length > 0 ){
+		console.log("lolcords:",newcoords)
+		var tar = newcoords[Math.floor(Math.random()*newcoords.length)];
+		console.log("tar:", tar)
+		coredata.npcs[npc].pos = tar[0];
+        	coredata.npcs[npc].dir = tar[1];
 	};
 };
 

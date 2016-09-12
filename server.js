@@ -137,8 +137,6 @@ listener.sockets.on('connection', function(socket){
 ////// INIT ////////////
   socket.emit('collmap', collmap);
 
-
-
 ///This is basically the update function /////////
   setInterval(function(){
         socket.emit('players', coredata);      
@@ -146,12 +144,12 @@ listener.sockets.on('connection', function(socket){
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
-  	if (coredata.players[data[0]].state !== "dead"){
-    process.stdout.write(data[1]+" commit to ->");
-    console.log(data[0], coredata.players[data[0]].pos);
-    coredata.players[data[0]].pos = data[1];
-    coredata.players[data[0]].dir = data[2];
-    };
+  	if (coredata.players[data[0]].state !== "dead" && collmap[data[1]] !== 1){
+    		process.stdout.write(data[1]+" commit to ->");
+		console.log(data[0], coredata.players[data[0]].pos);
+		coredata.players[data[0]].pos = data[1];
+		coredata.players[data[0]].dir = data[2];
+    	};
   });
 
 // This listens for new players ////////
