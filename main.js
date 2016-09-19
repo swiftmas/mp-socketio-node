@@ -16,8 +16,35 @@ var redknightdown = document.getElementById("rkdown");
 var redknightleft = document.getElementById("rkleft");
 var redknightright = document.getElementById("rkright");
 
-
-
+var charsprites = new Image();
+charsprites.src = '/static/charsprites.png';
+var chars = {};
+chars.blueKnight = {};
+chars.blueKnight.up = [charsprites, 0, 16, 16, 16];
+chars.blueKnight.down = [charsprites, 16, 16, 16, 16];
+chars.blueKnight.left = [charsprites, 32, 16, 16, 16];
+chars.blueKnight.right = [charsprites, 48, 16, 16, 16];
+chars.redKnight = {};
+chars.redKnight.up = [charsprites, 0, 0, 16, 16];
+chars.redKnight.down = [charsprites, 16, 0, 16, 16];
+chars.redKnight.left = [charsprites, 32, 0, 16, 16];
+chars.redKnight.right = [charsprites, 48, 0, 16, 16];
+chars.greenKnight = {};
+chars.greenKnight.up = [charsprites, 0, 32, 16, 16];
+chars.greenKnight.down = [charsprites, 16, 32, 16, 16];
+chars.greenKnight.left = [charsprites, 32, 32, 16, 16];
+chars.greenKnight.right = [charsprites, 48, 32, 16, 16];
+chars.goldKnight = {};
+chars.goldKnight.up = [charsprites, 0, 48, 16, 16];
+chars.goldKnight.down = [charsprites, 16, 48, 16, 16];
+chars.goldKnight.left = [charsprites, 32, 48, 16, 16];
+chars.goldKnight.right = [charsprites, 48, 48, 16, 16];
+chars.duane = {};
+chars.duane.up = [charsprites, 0, 64, 16, 16];
+chars.duane.down = [charsprites, 16, 64, 16, 16];
+chars.duane.left = [charsprites, 32, 64, 16, 16];
+chars.duane.right = [charsprites, 48, 64, 16, 16];
+console.log(chars)
 //Utility Functoins //////////////////////////////////////////
 
 function rco(j) {
@@ -48,7 +75,7 @@ function cco(axis, location){
 function add_player(team){
 	playername = "p" + socket.io.engine.id;
 	newplayerdata = {};
-	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "health": 100, "alerttimer": 0, "team": team, "origin": "2.2"};
+	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "health": 100, "alerttimer": 0, "team": team, "skin": "duane", "origin": "2.2"};
 	console.log(newplayerdata);
 	userplayer = playername;
 	elem = document.getElementById("chooseteam");
@@ -61,36 +88,62 @@ function drawplayers(data){
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     dn = data.npcs;
     for (npc in dn){
-		if (dn.hasOwnProperty(npc)){
+	var sprite = [];
+	if (dn.hasOwnProperty(npc)){
             if (dn[npc].state == "normal"){
                 var dir = dn[npc].dir;
+		var skin = dn[npc].skin;
                 switch(dir){
-                    case 'up': 
-                        var redknight = redknightup; 
+                    case 'up':
+                        sprite = chars[skin].up.slice(0, 5); 
                         break;
                     case 'down': 
-                        var redknight = redknightdown; 
+			sprite = chars[skin].down.slice(0, 5);
                         break;
                     case 'left': 
-                        var redknight = redknightleft; 
+                        sprite = chars[skin].left.slice(0, 5); 
                         break;    
                     case 'right': 
-                        var redknight = redknightright; 
+                        sprite = chars[skin].right.slice(0, 5); 
                         break;
-                };       
-                ctx.drawImage(redknight, aco('x', dn[npc].pos.split('.')[0]), aco('y', dn[npc].pos.split('.')[1]));
+                };
+		sprite.push(aco('x', dn[npc].pos.split('.')[0]), aco('y', dn[npc].pos.split('.')[1]), 16, 16)
+		var sp = sprite 
+                ctx.drawImage(sp[0],sp[1],sp[2],sp[3],sp[4],sp[5],sp[6],sp[7],sp[8]);
                 ctx.fillStyle = dn[npc].team;
                 ctx.fillRect(aco('x', dn[npc].pos.split('.')[0]) +5, aco('y', dn[npc].pos.split('.')[1]) +6, 4, 4);
             };
-		};
 	};
+    };
     dp = data.players;
     for (player in dp){
-		if (dp.hasOwnProperty(player)){
-            ctx.fillStyle = dp[player].team;
-            ctx.fillRect(aco('x', dp[player].pos.split('.')[0]), aco('y', dp[player].pos.split('.')[1]), 16, 16);
-		};
+	var sprite = [];
+	if (dp.hasOwnProperty(player)){
+	    if (dp[player].state == "normal"){
+                var dir = dp[player].dir;
+                var skin = dp[player].skin;
+                switch(dir){
+                    case 'up':
+                        sprite = chars[skin].up.slice(0, 5);
+                        break;
+                    case 'down':
+                        sprite = chars[skin].down.slice(0, 5);
+                        break;
+                    case 'left':
+                        sprite = chars[skin].left.slice(0, 5);
+                        break;
+                    case 'right':
+                        sprite = chars[skin].right.slice(0, 5);
+                        break;
+                };
+                sprite.push(aco('x', dp[player].pos.split('.')[0]), aco('y', dp[player].pos.split('.')[1]), 16, 16)
+                var sp = sprite
+                ctx.drawImage(sp[0],sp[1],sp[2],sp[3],sp[4],sp[5],sp[6],sp[7],sp[8]);
+         	ctx.fillStyle = dp[player].team;
+         	ctx.fillRect(aco('x', dp[player].pos.split('.')[0]) + 6, aco('y', dp[player].pos.split('.')[1]) + 6, 4, 4);
+	    };
 	};
+    };
 };
 
 
@@ -159,22 +212,27 @@ function move(dir, playername) {
 
 };
 
-
+function updatehud() {
+	if (userplayer !== null){
+		document.getElementById("tophud").innerHTML = coredata.players[userplayer].pos + " - " + coredata.players[userplayer].alerttimer;
+		document.getElementById("bothud").innerHTML = coredata.players[userplayer].health;
+	};
+}
 
 
 
 ///////// EVENTS /////////////////////////////////////////////////
 //// STARTUP //////////////////////
-if(window.addEventListener){
-    window.addEventListener('load',setwindow,false); //W3C
-}
-else{
-    window.attachEvent('onload',setwindow); //IE
-};
+//if(window.addEventListener){
+//    window.addEventListener('load',setwindow,false); //W3C
+//}
+//else{
+//   window.attachEvent('onload',setwindow); //IE
+//};
 
-function setwindow(){
-	window.scrollTo(0,0);
-};
+//function setwindow(){
+//	window.scrollTo(0,0);
+//};
 
 
 ///// GET PLAYER TEAM AND STUFF ////
@@ -195,6 +253,7 @@ document.body.addEventListener("keydown", function(event) {
 ////// GET player movement data //////////////
 socket.on('players', function(data){
 	coredata = data;
+	updatehud();
 	//moveplayers(data.players);
 	drawplayers(data);
 	if (userplayer !== null){
@@ -224,7 +283,6 @@ document.getElementById("maptop").addEventListener("touchstart", function(event)
 	document.getElementById("logger").innerHTML = initialtouch
 }, false);
 
-//document.ontouchmove = function(event){event.preventDefault();};
 
 document.addEventListener("touchmove", function(event) {	
 	event.preventDefault();

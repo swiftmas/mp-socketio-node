@@ -7,9 +7,8 @@
   <title>jscripttest</title>
   <meta name="description" content="jscripttest">
   <meta name="author" content="SitePoint">
-  <meta name="viewport" content="width=device-width, initial-scale=1.5">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.5"> -->
   <script src="/socket.io/socket.io.js"></script>
-  <link rel="stylesheet" href="style.css">
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
   <![endif]-->
@@ -31,8 +30,9 @@ body {
 
 </head>
 <body>
-<img id="maptop" style="position: absolute; top: 0px; left: 0px;" src="/static/toplayer.png">
-    <div style="display: none;">
+
+<!-- IMAGE LOADER -->
+    <div id="image-loader" style="display: none;">
         <img id="rkup" src="/static/red-knight-up.png">
         <img id="rkdown" src="/static/red-knight-down.png">
         <img id="rkleft" src="/static/red-knight-left.png">
@@ -40,6 +40,32 @@ body {
     </div>
 
 
+
+<!-- BOTTOM TO TOP IS THE ORDER -->
+
+<!-- canvas layer --> 
+<canvas id='map' width="1280" height="1280" style="background: url('/static/canvas.png')">
+</canvas>
+
+<!-- anim layer -->
+
+
+<!-- top layer -->
+<img id="maptop" style="position: absolute; top: 0px; left: 0px;" src="/static/toplayer.png">
+
+<!-- Player Hud -->
+
+<div id="tophud" style="position: fixed; top:0;">
+top
+</div>
+
+<div id="bothud" style="position: fixed; bottom: 20px;">
+bot
+</div>
+
+
+
+<!-- selector hud -->
 <div id="chooseteam" style="position:absolute;top:5px; left:4%;">
 	<div id="selBlue" style="display: inline-block; height:64px; width: 64px; background-color:Blue"></div>
 	<div id="selGreen" style="display: inline-block; height:64px; width: 64px; background-color:Green"></div> 
@@ -49,8 +75,8 @@ body {
 	<br> <p style="text-align:center;">Select Your Team</p>
 </div>
 
-<canvas id='map' width="1280" height="1280" style="background: url('/static/canvas.png')">
-</canvas>
+
+
 <p id='coor'></p> Use WASD to move and n to attack. 
 <p id="logger"></p>
 
