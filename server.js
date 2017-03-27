@@ -135,12 +135,12 @@ var listener = io.listen(server);
 listener.sockets.on('connection', function(socket){
 
 ////// INIT ////////////
-  socket.emit('collmap', collmap);
+  socket.emit('getmap', collmap);
 
 ///This is basically the update function /////////
   setInterval(function(){
-        socket.emit('players', coredata);      
-    }, 16); 
+        socket.emit('getdata', coredata);
+    }, 16);
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
@@ -166,14 +166,14 @@ listener.sockets.on('connection', function(socket){
 // Listens for attacks ////// !!!!!! NEEDS FUNCTION OUSIDE OF LISTENER  !!!!!!!!///////////////////////////
   socket.on('attacks', function(data) {
     combat.attack(data[0], "players");
-    
+
   });
-// Listens for disconnects 
+// Listens for disconnects
   socket.on('disconnect', function() {
     console.log(this.id + "Disconnected");
     var cleanid = this.id.substring(2);
     if (typeof coredata.players["p"+cleanid] !== undefined){
         delete coredata.players["p" + cleanid];
     };
-  }); 
+  });
 });
