@@ -243,7 +243,7 @@ socket.on('getdata', function(data){
 
 ///// Touch device controlls ///////////////////////
 document.getElementById("attack").addEventListener("touchstart", function(event) {
-	socket.emit('attacks', pattack);
+	socket.emit('attacks', userplayer);
 });
 
 document.getElementById("map").addEventListener("touchstart", function(event) {
