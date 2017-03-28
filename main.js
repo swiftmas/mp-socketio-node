@@ -242,10 +242,14 @@ socket.on('getdata', function(data){
 
 
 ///// Touch device controlls ///////////////////////
+document.getElementById("attack").addEventListener("touchstart", function(event) {
+	socket.emit('attacks', pattack);
+});
+
 document.getElementById("map").addEventListener("touchstart", function(event) {
 	event.preventDefault();
 	var pattack = [userplayer];
-	socket.emit('attacks', pattack);
+	//socket.emit('attacks', pattack);
 	tstarx = Math.ceil((event.pageX));
  	tstary = Math.ceil((event.pageY));
 	touchdown = true;
