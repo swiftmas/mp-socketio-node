@@ -63,12 +63,16 @@ function explode(bomb) {
     posy = parseInt(dbomb.pos.split(".")[1]);
     console.log("boom @ " + dbomb.pos, posx, posy)
     dodamage(dbomb.pos)
+    bombAffect = [];
     //x
       //left
       for (var x = posx -1; x >= posx-radius; x--){
         var atpos = x + "." + posy
         if (collmap[atpos] !== 1){
           dodamage(atpos);
+          if (x !== posx - 3){
+            coredata.effects.push([atpos, "yellow"]);
+          };
         } else {
           break;
         };
@@ -78,6 +82,9 @@ function explode(bomb) {
         atpos = x + "." + posy
         if (collmap[atpos] !== 1){
           dodamage(atpos);
+          if (x !== posx + 3){
+            coredata.effects.push([atpos, "yellow"]);
+          };
         } else {
           break;
         };
@@ -88,6 +95,9 @@ function explode(bomb) {
         var atpos = posx + "." + y
         if (collmap[atpos] !== 1){
           dodamage(atpos);
+          if (y !== posy - 3){
+            coredata.effects.push([atpos, "yellow"]);
+          };
         } else {
           break;
         };
@@ -97,11 +107,13 @@ function explode(bomb) {
         atpos = posx + "." + y
         if (collmap[atpos] !== 1){
           dodamage(atpos);
+          if (y !== posy + 3){
+            coredata.effects.push([atpos, "yellow"]);
+          };
         } else {
           break;
         };
       };
-
 };
 
 function dodamage(atpos){

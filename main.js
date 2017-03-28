@@ -79,7 +79,12 @@ function draw(){
 			ctx.fillRect(db[bomb].pos.split('.')[0] -1, db[bomb].pos.split('.')[1] -1, 1, 1);
 		};
 
-
+		// Draw effects ///////////////
+		de = coredata.effects;
+		for (var effect in de){
+			ctx.fillStyle = de[effect][1];
+			ctx.fillRect(de[effect][0].split('.')[0] -1, de[effect][0].split('.')[1] -1, 1, 1);
+		};
 		// DRAW NPCS /////////////////////////////////////
     dn = coredata.npcs;
     for (var npc in dn){
@@ -192,7 +197,14 @@ document.getElementById("selGreen").addEventListener("click", function(event) { 
 document.getElementById("selRed").addEventListener("click", function(event) { add_player("red"); });
 document.getElementById("selGold").addEventListener("click", function(event) { add_player("gold"); });
 
-
+window.addEventListener("resize", function() {
+	if (window.innerWidth < window.innerHeight){
+		map.style.width = window.innerWidth + "px";
+	} else {
+		map.style.width = window.innerHeight+"px";
+	}
+	console.log('window rezied!!!')
+});
 
 ///// USER INPUT for player movement  ////////////////////////////
 document.body.addEventListener("keydown", function(event) {
@@ -206,6 +218,11 @@ document.body.addEventListener("keydown", function(event) {
 socket.on('getmap', function(data) {
 	mapdata = data;
 	console.log("mapgot, MAP:", mapdata);
+	if (window.innerWidth < window.innerHeight){
+		map.style.width = window.innerWidth + "px";
+	} else {
+		map.style.width = window.innerHeight+"px";
+	}
 });
 
 socket.on('getdata', function(data){

@@ -139,6 +139,7 @@ listener.sockets.on('connection', function(socket){
 
 ///This is basically the update function /////////
   setInterval(function(){
+        coredata.effects = []
         combat.bombcontroller();
         socket.emit('getdata', coredata);
     }, 100);
