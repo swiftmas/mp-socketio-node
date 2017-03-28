@@ -139,8 +139,9 @@ listener.sockets.on('connection', function(socket){
 
 ///This is basically the update function /////////
   setInterval(function(){
+        combat.bombcontroller();
         socket.emit('getdata', coredata);
-    }, 16);
+    }, 100);
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
@@ -166,14 +167,14 @@ listener.sockets.on('connection', function(socket){
 // Listens for attacks ////// !!!!!! NEEDS FUNCTION OUSIDE OF LISTENER  !!!!!!!!///////////////////////////
   socket.on('attacks', function(data) {
     combat.attack(data[0], "players");
-
   });
 // Listens for disconnects
   socket.on('disconnect', function() {
     console.log(this.id + "Disconnected");
-    var cleanid = this.id.substring(2);
+    var cleanid = this.id
     if (typeof coredata.players["p"+cleanid] !== undefined){
         delete coredata.players["p" + cleanid];
+        console.log("cleaned up " + cleanid)
     };
   });
 });

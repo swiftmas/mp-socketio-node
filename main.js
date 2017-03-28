@@ -48,7 +48,7 @@ function draw(){
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-		//MAP CREATE
+		//MAP CREATE////////////////////
 		collElements = [];
 		for (var key in mapdata) {
 			if (mapdata[key] == 1){
@@ -59,11 +59,35 @@ function draw(){
 			ctx.fillStyle = "#e3e3e3";
 			ctx.fillRect(collElements[i].split('.')[0] -1, collElements[i].split('.')[1] -1, 1, 1);
 		};
+		// DRAW BOMBS ///////////////////////////////////
+		db = coredata.bombs;
+		for (var bomb in db){
+			if (db[bomb].state > 0 && db[bomb].state < 7){
+				ctx.fillStyle = "black";
+			};
+			if (db[bomb].state > 7 && db[bomb].state < 14){
+				ctx.fillStyle = "yellow";
+			};
+			if (db[bomb].state > 14 && db[bomb].state < 21){
+				ctx.fillStyle = "black";
+			};
+			if (db[bomb].state > 21 && db[bomb].state < 28){
+				ctx.fillStyle = "yellow";
+			};
 
+
+			ctx.fillRect(db[bomb].pos.split('.')[0] -1, db[bomb].pos.split('.')[1] -1, 1, 1);
+		};
+
+
+		// DRAW NPCS /////////////////////////////////////
     dn = coredata.npcs;
     for (var npc in dn){
-			nothing = "none"
+			ctx.fillStyle = dn[npc].team;
+			ctx.fillRect(dn[npc].pos.split('.')[0] -1, dn[npc].pos.split('.')[1] -1, 1, 1);
     };
+
+		// DRAW PLAYERS ///////////////////////////////////////
     dp = coredata.players;
     for (var player in dp){
 			ctx.fillStyle = dp[player].team;
