@@ -51,7 +51,7 @@ function attack(attacker, npcsORplayers){
     	atpos = nx + "." + ny
     };
     if (collmap[atpos] !== 1) {
-      coredata.bombs.push({"pos": atpos, "state": "28", "owner": attacker});
+      coredata.bombs.push({"pos": atpos, "state": "20", "owner": attacker});
     };
 
 };
@@ -72,7 +72,7 @@ function explode(bomb) {
           dodamage(atpos);
           if (x !== posx - 3){
             coredata.effects.push([atpos, "yellow"]);
-          };
+          } else {coredata.effects.push([atpos, "orange"]);};
         } else {
           break;
         };
@@ -84,7 +84,7 @@ function explode(bomb) {
           dodamage(atpos);
           if (x !== posx + 3){
             coredata.effects.push([atpos, "yellow"]);
-          };
+          } else {coredata.effects.push([atpos, "orange"]);};
         } else {
           break;
         };
@@ -97,7 +97,7 @@ function explode(bomb) {
           dodamage(atpos);
           if (y !== posy - 3){
             coredata.effects.push([atpos, "yellow"]);
-          };
+          } else {coredata.effects.push([atpos, "orange"]);};
         } else {
           break;
         };
@@ -109,7 +109,7 @@ function explode(bomb) {
           dodamage(atpos);
           if (y !== posy + 3){
             coredata.effects.push([atpos, "yellow"]);
-          };
+          } else {coredata.effects.push([atpos, "orange"]);};
         } else {
           break;
         };

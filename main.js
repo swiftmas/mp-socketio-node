@@ -62,16 +62,16 @@ function draw(){
 		// DRAW BOMBS ///////////////////////////////////
 		db = coredata.bombs;
 		for (var bomb in db){
-			if (db[bomb].state > 0 && db[bomb].state < 7){
+			if (db[bomb].state > 0 && db[bomb].state < 5){
 				ctx.fillStyle = "black";
 			};
-			if (db[bomb].state > 7 && db[bomb].state < 14){
+			if (db[bomb].state > 5 && db[bomb].state < 10){
 				ctx.fillStyle = "yellow";
 			};
-			if (db[bomb].state > 14 && db[bomb].state < 21){
+			if (db[bomb].state > 10 && db[bomb].state < 15){
 				ctx.fillStyle = "black";
 			};
-			if (db[bomb].state > 21 && db[bomb].state < 28){
+			if (db[bomb].state > 15 && db[bomb].state < 20){
 				ctx.fillStyle = "yellow";
 			};
 
@@ -168,27 +168,6 @@ function move(dir, playername) {
 
 };
 
-//function updatehud() {
-//	if (userplayer !== null){
-//		document.getElementById("tophud").innerHTML = coredata.players[userplayer].pos + " - " + coredata.players[userplayer].alerttimer;
-//		document.getElementById("bothud").innerHTML = coredata.players[userplayer].health;
-//	};
-//};
-
-
-
-///////// EVENTS /////////////////////////////////////////////////
-//// STARTUP //////////////////////
-//if(window.addEventListener){
-//    window.addEventListener('load',setwindow,false); //W3C
-//}
-//else{
-//   window.attachEvent('onload',setwindow); //IE
-//};
-
-//function setwindow(){
-//	window.scrollTo(0,0);
-//};
 
 
 ///// GET PLAYER TEAM AND STUFF ////
@@ -243,7 +222,7 @@ socket.on('getdata', function(data){
 
 ///// Touch device controlls ///////////////////////
 document.getElementById("attack").addEventListener("touchstart", function(event) {
-	socket.emit('attacks', userplayer);
+	socket.emit('attacks', [userplayer]);
 });
 
 document.getElementById("map").addEventListener("touchstart", function(event) {

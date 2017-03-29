@@ -110,27 +110,19 @@ server.listen(8080);
 
 
 
-///COOL STUFF ///////////////
+//----------------------------/COOL STUFF /-----------------------------------------------------------------------//////////////
 ////VARS////
 var coredata = globals.coredata;
 var collmap = globals.collmap;
 
 
+//// Server Update ///////////////////////////////////////////////////////////////////////////////////////////////////
+setInterval(function(){
+  coredata.effects = []
+  combat.bombcontroller();
+}, 100);
 
-//// INIT ///////
-
-
-
-//// MAIN UPDATE ///////////
-setInterval(function() {
-    //oldtime = (new Date).getTime();
-	npcs.npccontroller();
-	npcs.alerttimedown();
-    //console.log("clientdatatime = ", oldtime - (new Date).getTime());
-}, 512)
-
-
-///// LISTENERS ////// NEEDS CLEANED ////////////////
+///// Per Connectoin /////////////////////////////////////////////////////////////////////////////////////////////////
 var listener = io.listen(server);
 listener.sockets.on('connection', function(socket){
 
@@ -138,11 +130,9 @@ listener.sockets.on('connection', function(socket){
   socket.emit('getmap', collmap);
 
 ///This is basically the update function /////////
-  setInterval(function(){
-        coredata.effects = []
-        combat.bombcontroller();
+  var updateInt = setInterval(function(){
         socket.emit('getdata', coredata);
-    }, 100);
+    }, 50);
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
@@ -171,6 +161,7 @@ listener.sockets.on('connection', function(socket){
   });
 // Listens for disconnects
   socket.on('disconnect', function() {
+    clearInterval(updateInt);
     console.log(this.id + "Disconnected");
     var cleanid = this.id
     if (typeof coredata.players["p"+cleanid] !== undefined){
