@@ -15,13 +15,6 @@ var touchtimer = 0;
 //Utility Functoins //////////////////////////////////////////
 
 //RO real origin (used all over in draw)
-function ro(axis, location) {
-	if (axis == "y"){
-	return (location + document.getElementById("map").offsetTop);
-	} else if (axis == "x"){
-	return (location + document.getElementById("map").offsetLeft);
-	};
-};
 
 
 
@@ -175,11 +168,22 @@ document.getElementById("selGreen").addEventListener("click", function(event) { 
 document.getElementById("selRed").addEventListener("click", function(event) { add_player("red"); });
 document.getElementById("selGold").addEventListener("click", function(event) { add_player("gold"); });
 
+
+
 window.addEventListener("resize", function() {
+	var sels = ["selBlue", "selRed", "selGreen", "selGold"]
 	if (window.innerWidth < window.innerHeight){
 		map.style.width = window.innerWidth + "px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerWidth/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerWidth/4 + "px";
+		};
 	} else {
 		map.style.width = window.innerHeight+"px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerHeight/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerHeight/4 + "px";
+		};
 	}
 });
 
@@ -194,10 +198,19 @@ document.body.addEventListener("keydown", function(event) {
 socket.on('getmap', function(data) {
 	mapdata = data;
 	console.log("map was loaded:", mapdata);
+	var sels = ["selBlue", "selRed", "selGreen", "selGold"]
 	if (window.innerWidth < window.innerHeight){
 		map.style.width = window.innerWidth + "px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerWidth/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerWidth/4 + "px";
+		};
 	} else {
 		map.style.width = window.innerHeight+"px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerHeight/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerHeight/4 + "px";
+		};
 	}
 });
 

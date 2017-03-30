@@ -25,6 +25,14 @@ body {
 	margin: 0px;
   text-align: center;
 }
+
+#chooseteam {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  top: 10%;
+}
+
 </style>
 
 
@@ -60,12 +68,12 @@ body {
 
 
 <!-- selector hud -->
-<div id="chooseteam" style="position:absolute;top:5px; left:4%;">
-	<div id="selBlue" style="display: inline-block; height:64px; width: 64px; background-color:Blue"></div>
-	<div id="selGreen" style="display: inline-block; height:64px; width: 64px; background-color:Green"></div>
+<div id="chooseteam">
+	<div id="selBlue" class="sels" style="display: inline-block; background-color:Blue"></div>
+	<div id="selGreen" class="sels" style="display: inline-block; background-color:Green"></div>
 	<br>
-	<div id="selRed" style="display: inline-block; height:64px; width: 64px; background-color:Red"></div>
-	<div id="selGold" style="display: inline-block; height:64px; width: 64px; background-color:Gold"></div>
+	<div id="selRed" class="sels" style="display: inline-block; background-color:Red"></div>
+	<div id="selGold" class="sels" style="display: inline-block; background-color:Gold"></div>
 	<br> <p style="text-align:center;">Select Your Team</p>
 </div>
 
