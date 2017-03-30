@@ -114,8 +114,7 @@ function getinput(e) {
         move('up', userplayer)
     }
     else if (e.keyCode == '78') {
-    	pattack = [userplayer];
-		socket.emit('attacks', pattack);
+			socket.emit('attacks', [userplayer]);
     }
     else if (e.keyCode == '192') {
     	console.log(coredata);
@@ -182,12 +181,10 @@ window.addEventListener("resize", function() {
 	} else {
 		map.style.width = window.innerHeight+"px";
 	}
-	console.log('window rezied!!!')
 });
 
 ///// USER INPUT for player movement  ////////////////////////////
 document.body.addEventListener("keydown", function(event) {
-	console.log("coredata:", coredata);
 	if (userplayer !== null){
 		getinput(event);
 	};
@@ -196,7 +193,7 @@ document.body.addEventListener("keydown", function(event) {
 ////// GET data //////////////
 socket.on('getmap', function(data) {
 	mapdata = data;
-	console.log("mapgot, MAP:", mapdata);
+	console.log("map was loaded:", mapdata);
 	if (window.innerWidth < window.innerHeight){
 		map.style.width = window.innerWidth + "px";
 	} else {
