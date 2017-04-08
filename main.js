@@ -23,6 +23,24 @@ var touchtimer = 0;
 
 ///// METHODS ///////////////////////////
 
+function resize(){
+	var sels = ["selBlue", "selRed", "selGreen", "selGold"]
+	if (window.innerWidth < window.innerHeight){
+		map.style.width = window.innerWidth + "px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerWidth/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerWidth/4 + "px";
+		};
+	} else {
+		map.style.width = window.innerHeight+"px";
+		for(i=0; i < sels.length; i++) {
+			document.getElementById(sels[i]).style.width = window.innerHeight/4 + "px";
+			document.getElementById(sels[i]).style.height = window.innerHeight/4 + "px";
+		};
+	}
+}
+
+
 function add_player(team){
 	playername = "p" + socket.io.engine.id;
 	newplayerdata = {};
@@ -43,14 +61,21 @@ function draw(){
 
 		//MAP CREATE////////////////////
 		collElements = [];
+		collDestElem = [];
 		for (var key in mapdata) {
 			if (mapdata[key] == 1){
 				collElements.push(key);
+			} else if (mapdata[key] == 2) {
+				collDestElem.push(key);
 			};
 		};
 		for (var i = 0; i < collElements.length; i++) {
 			ctx.fillStyle = "#e3e3e3";
 			ctx.fillRect(collElements[i].split('.')[0] -1, collElements[i].split('.')[1] -1, 1, 1);
+		};
+		for (var i = 0; i < collDestElem.length; i++) {
+			ctx.fillStyle = "#c9c9c9";
+			ctx.fillRect(collDestElem[i].split('.')[0] -1, collDestElem[i].split('.')[1] -1, 1, 1);
 		};
 		// DRAW BOMBS ///////////////////////////////////
 		db = coredata.bombs;
@@ -107,10 +132,10 @@ function getinput(e) {
         move('up', userplayer)
     }
     else if (e.keyCode == '78') {
-			socket.emit('attacks', [userplayer]);
+			socket.emit('attack', userplayer);
     }
     else if (e.keyCode == '192') {
-    	console.log(coredata);
+    	console.log(JSON.stringify(coredata));
     }
     else if (e.keyCode == '83') {
         move('down', userplayer)
@@ -129,7 +154,6 @@ function move(dir, playername) {
 		x = parseInt(coredata.players[playername].pos.split(".")[0])
 		y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1
 		cellname = ''+x+'.'+y+''
-		console.log(x,y,cellname,json[cellname])
 		plocation = [playername, cellname, dir]
             	socket.emit('client_data', plocation);
 	};
@@ -137,7 +161,6 @@ function move(dir, playername) {
 		x = parseInt(coredata.players[playername].pos.split(".")[0])
 		y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
 		cellname = ''+x+'.'+y+''
-		console.log(x,y,cellname,json[cellname])
             	plocation = [playername, cellname, dir]
             	socket.emit('client_data', plocation);
 	};
@@ -145,7 +168,6 @@ function move(dir, playername) {
 		x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
 		y = parseInt(coredata.players[playername].pos.split(".")[1])
 		cellname = ''+x+'.'+y+''
-		console.log(x,y,cellname,json[cellname])
             	plocation = [playername, cellname, dir]
             	socket.emit('client_data', plocation);
 	};
@@ -153,7 +175,6 @@ function move(dir, playername) {
 		x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
 		y = parseInt(coredata.players[playername].pos.split(".")[1])
 		cellname = ''+x+'.'+y+''
-		console.log(x,y,cellname,json[cellname])
             	plocation = [playername, cellname, dir]
             	socket.emit('client_data', plocation);
 	};
@@ -169,22 +190,9 @@ document.getElementById("selRed").addEventListener("click", function(event) { ad
 document.getElementById("selGold").addEventListener("click", function(event) { add_player("gold"); });
 
 
-
+resize();
 window.addEventListener("resize", function() {
-	var sels = ["selBlue", "selRed", "selGreen", "selGold"]
-	if (window.innerWidth < window.innerHeight){
-		map.style.width = window.innerWidth + "px";
-		for(i=0; i < sels.length; i++) {
-			document.getElementById(sels[i]).style.width = window.innerWidth/4 + "px";
-			document.getElementById(sels[i]).style.height = window.innerWidth/4 + "px";
-		};
-	} else {
-		map.style.width = window.innerHeight+"px";
-		for(i=0; i < sels.length; i++) {
-			document.getElementById(sels[i]).style.width = window.innerHeight/4 + "px";
-			document.getElementById(sels[i]).style.height = window.innerHeight/4 + "px";
-		};
-	}
+	resize();
 });
 
 ///// USER INPUT for player movement  ////////////////////////////
@@ -198,20 +206,6 @@ document.body.addEventListener("keydown", function(event) {
 socket.on('getmap', function(data) {
 	mapdata = data;
 	console.log("map was loaded:", mapdata);
-	var sels = ["selBlue", "selRed", "selGreen", "selGold"]
-	if (window.innerWidth < window.innerHeight){
-		map.style.width = window.innerWidth + "px";
-		for(i=0; i < sels.length; i++) {
-			document.getElementById(sels[i]).style.width = window.innerWidth/4 + "px";
-			document.getElementById(sels[i]).style.height = window.innerWidth/4 + "px";
-		};
-	} else {
-		map.style.width = window.innerHeight+"px";
-		for(i=0; i < sels.length; i++) {
-			document.getElementById(sels[i]).style.width = window.innerHeight/4 + "px";
-			document.getElementById(sels[i]).style.height = window.innerHeight/4 + "px";
-		};
-	}
 });
 
 socket.on('getdata', function(data){
@@ -232,7 +226,7 @@ socket.on('getdata', function(data){
 
 ///// Touch device controlls ///////////////////////
 document.getElementById("attack").addEventListener("touchstart", function(event) {
-	socket.emit('attacks', [userplayer]);
+	socket.emit('attack', userplayer);
 });
 
 document.getElementById("map").addEventListener("touchstart", function(event) {

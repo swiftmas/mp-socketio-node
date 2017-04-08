@@ -114,11 +114,14 @@ server.listen(8080);
 ////VARS////
 var coredata = globals.coredata;
 var collmap = globals.collmap;
+var mapchange = globals.mapchange;
+var attackQueue = globals.attackQueue;
 
 
 //// Server Update ///////////////////////////////////////////////////////////////////////////////////////////////////
 setInterval(function(){
   coredata.effects = []
+  combat.processBombs();
   combat.bombcontroller();
 }, 100);
 
@@ -132,13 +135,18 @@ listener.sockets.on('connection', function(socket){
 ///This is basically the update function /////////
   var updateInt = setInterval(function(){
         socket.emit('getdata', coredata);
+        if (mapchange == true){
+          console.log("it happened");
+          socket.emit('getmap', collmap);
+          mapchange = false;
+        };
     }, 50);
 
 // For every Client data event (this is where we recieve movement)////////////
   socket.on('client_data', function(data){
-  	if (coredata.players[data[0]].state !== "dead" && collmap[data[1]] !== 1){
-    		process.stdout.write(data[1]+" commit to ->");
-		console.log(data[0], coredata.players[data[0]].pos);
+  	if (coredata.players[data[0]].state !== "dead" && collmap[data[1]] == 0){
+    //process.stdout.write(data[1]+" commit to ->");
+		//console.log(data[0], coredata.players[data[0]].pos);
 		coredata.players[data[0]].pos = data[1];
 		coredata.players[data[0]].dir = data[2];
     	};
@@ -156,8 +164,8 @@ listener.sockets.on('connection', function(socket){
   });
 
 // Listens for attacks ////// !!!!!! NEEDS FUNCTION OUSIDE OF LISTENER  !!!!!!!!///////////////////////////
-  socket.on('attacks', function(data) {
-    combat.attack(data[0], "players");
+  socket.on('attack', function(data) {
+    attackQueue[coredata.players[data].pos] =  [data, "players"];
   });
 // Listens for disconnects
   socket.on('disconnect', function() {
