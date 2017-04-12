@@ -44,7 +44,7 @@ function resize(){
 function add_player(team){
 	playername = "p" + socket.io.engine.id;
 	newplayerdata = {};
-	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "health": 100, "alerttimer": 0, "team": team, "skin": "duane", "origin": "2.2"};
+	newplayerdata[playername] = {"pos":"2.2", "dir": "up", "state":"normal", "health": 100, "alerttimer": 0, "team": team, "origin": "2.2"};
 	console.log(newplayerdata);
 	userplayer = playername;
 	elem = document.getElementById("chooseteam");
@@ -77,46 +77,31 @@ function draw(){
 			ctx.fillStyle = "#c9c9c9";
 			ctx.fillRect(collDestElem[i].split('.')[0] -1, collDestElem[i].split('.')[1] -1, 1, 1);
 		};
-		// DRAW BOMBS ///////////////////////////////////
-		db = coredata.bombs;
-		for (var bomb in db){
-			if (db[bomb].state > 0 && db[bomb].state < 5){
+		// DRAW Blocks ///////////////////////////////////
+		db = coredata;
+		for (var code in db){
+			blk = db[code].split(".");
+			if (blk[0] == "01"){
+				ctx.fillStyle = "blue";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
+			};
+			if (blk[0] == "02"){
+				ctx.fillStyle = "green";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
+			};
+			if (blk[0] == "11"){
 				ctx.fillStyle = "black";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
 			};
-			if (db[bomb].state > 5 && db[bomb].state < 10){
+			if (blk[0] == "12"){
 				ctx.fillStyle = "yellow";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
 			};
-			if (db[bomb].state > 10 && db[bomb].state < 15){
-				ctx.fillStyle = "black";
+			if (blk[0] == "13"){
+				ctx.fillStyle = "orange";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
 			};
-			if (db[bomb].state > 15 && db[bomb].state < 20){
-				ctx.fillStyle = "yellow";
-			};
-
-
-			ctx.fillRect(db[bomb].pos.split('.')[0] -1, db[bomb].pos.split('.')[1] -1, 1, 1);
 		};
-
-		// Draw effects ///////////////
-		de = coredata.effects;
-		for (var effect in de){
-			ctx.fillStyle = de[effect][1];
-			ctx.fillRect(de[effect][0].split('.')[0] -1, de[effect][0].split('.')[1] -1, 1, 1);
-		};
-		// DRAW NPCS /////////////////////////////////////
-    dn = coredata.npcs;
-    for (var npc in dn){
-			ctx.fillStyle = dn[npc].team;
-			ctx.fillRect(dn[npc].pos.split('.')[0] -1, dn[npc].pos.split('.')[1] -1, 1, 1);
-    };
-
-		// DRAW PLAYERS ///////////////////////////////////////
-    dp = coredata.players;
-    for (var player in dp){
-			ctx.fillStyle = dp[player].team;
-			ctx.fillRect(dp[player].pos.split('.')[0] -1, dp[player].pos.split('.')[1] -1, 1, 1);
-		};
-
 	};
 };
 
@@ -150,44 +135,16 @@ function getinput(e) {
 };
 
 function move(dir, playername) {
-	if (dir == "up"){
-		x = parseInt(coredata.players[playername].pos.split(".")[0])
-		y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1
-		cellname = ''+x+'.'+y+''
-		plocation = [playername, cellname, dir]
-            	socket.emit('client_data', plocation);
-	};
-	if (dir == "down"){
-		x = parseInt(coredata.players[playername].pos.split(".")[0])
-		y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
-		cellname = ''+x+'.'+y+''
-            	plocation = [playername, cellname, dir]
-            	socket.emit('client_data', plocation);
-	};
-	if (dir == "left"){
-		x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
-		y = parseInt(coredata.players[playername].pos.split(".")[1])
-		cellname = ''+x+'.'+y+''
-            	plocation = [playername, cellname, dir]
-            	socket.emit('client_data', plocation);
-	};
-	if (dir == "right"){
-		x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
-		y = parseInt(coredata.players[playername].pos.split(".")[1])
-		cellname = ''+x+'.'+y+''
-            	plocation = [playername, cellname, dir]
-            	socket.emit('client_data', plocation);
-	};
-
+	socket.emit('movement', [playername, dir]);
 };
 
 
 
 ///// GET PLAYER TEAM AND STUFF ////
-document.getElementById("selBlue").addEventListener("click", function(event) { add_player("blue"); });
-document.getElementById("selGreen").addEventListener("click", function(event) { add_player("green"); });
-document.getElementById("selRed").addEventListener("click", function(event) { add_player("red"); });
-document.getElementById("selGold").addEventListener("click", function(event) { add_player("gold"); });
+document.getElementById("selBlue").addEventListener("click", function(event) { add_player("01"); });
+document.getElementById("selGreen").addEventListener("click", function(event) { add_player("02"); });
+document.getElementById("selRed").addEventListener("click", function(event) { add_player("03"); });
+document.getElementById("selGold").addEventListener("click", function(event) { add_player("04"); });
 
 
 resize();

@@ -116,39 +116,77 @@ var coredata = globals.coredata;
 var collmap = globals.collmap;
 var mapchange = globals.mapchange;
 var attackQueue = globals.attackQueue;
-
+var listener = io.listen(server);
 
 //// Server Update ///////////////////////////////////////////////////////////////////////////////////////////////////
 setInterval(function(){
   coredata.effects = []
   combat.processBombs();
   combat.bombcontroller();
+
+  ///////////////
+  var datas = [];
+  //PLAYERS
+  var dp = coredata.players;
+  for ( var player in dp){
+    var code = dp[player].team;
+    var pos = dp[player].pos
+    datas.push(code + "." + pos);
+  }
+  //Bombs
+  var db = coredata.bombs;
+  for (var bomb in db){
+    var code = db[bomb].state;
+    if (code >= 18 || code <= 11 && code >= 4 ){
+      code = 11;
+    } else {
+      code = 12;
+    };
+    var pos = db[bomb].pos
+    datas.push(code + "." + pos);
+  }
+  datas.push.apply(datas, coredata.effects);
+  listener.sockets.emit('getdata', datas);
 }, 100);
 
 ///// Per Connectoin /////////////////////////////////////////////////////////////////////////////////////////////////
-var listener = io.listen(server);
 listener.sockets.on('connection', function(socket){
 
 ////// INIT ////////////
   socket.emit('getmap', collmap);
 
-///This is basically the update function /////////
-  var updateInt = setInterval(function(){
-        socket.emit('getdata', coredata);
-        if (mapchange == true){
-          console.log("it happened");
-          socket.emit('getmap', collmap);
-          mapchange = false;
-        };
-    }, 50);
-
 // For every Client data event (this is where we recieve movement)////////////
-  socket.on('client_data', function(data){
-  	if (coredata.players[data[0]].state !== "dead" && collmap[data[1]] == 0){
+  socket.on('movement', function(data){
+    var playername = data[0]
+    var dir = data[1]
+    if (dir == "up"){
+  		x = parseInt(coredata.players[playername].pos.split(".")[0])
+  		y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1
+  		cellname = ''+x+'.'+y+''
+  	};
+  	if (dir == "down"){
+  		x = parseInt(coredata.players[playername].pos.split(".")[0])
+  		y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
+  		cellname = ''+x+'.'+y+''
+  	};
+  	if (dir == "left"){
+  		x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
+  		y = parseInt(coredata.players[playername].pos.split(".")[1])
+  		cellname = ''+x+'.'+y+''
+  	};
+  	if (dir == "right"){
+  		x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
+  		y = parseInt(coredata.players[playername].pos.split(".")[1])
+  		cellname = ''+x+'.'+y+''
+  	};
+
+
+
+  	if (coredata.players[playername].state !== "dead" && collmap[cellname] == 0){
     //process.stdout.write(data[1]+" commit to ->");
 		//console.log(data[0], coredata.players[data[0]].pos);
-		coredata.players[data[0]].pos = data[1];
-		coredata.players[data[0]].dir = data[2];
+		coredata.players[playername].pos = cellname;
+		coredata.players[playername].dir = dir;
     	};
   });
 
@@ -169,7 +207,6 @@ listener.sockets.on('connection', function(socket){
   });
 // Listens for disconnects
   socket.on('disconnect', function() {
-    clearInterval(updateInt);
     console.log(this.id + "Disconnected");
     var cleanid = this.id
     if (typeof coredata.players["p"+cleanid] !== undefined){

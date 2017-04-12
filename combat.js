@@ -21,18 +21,21 @@ module.exports = {
 };
 
 function bombcontroller(){
-    db = coredata.bombs;
+    var db = coredata.bombs;
     removes = [];
-    for (var bomb = 0; bomb < db.length; bomb++){
-      if (db[bomb].state < -1){ removes.push(bomb); break};
-      db[bomb].state -= 1;
-      if (db[bomb].state < 1){
+    for (var bomb = coredata.bombs.length -1; bomb >= 0; bomb--){
+      console.log(JSON.stringify(db[bomb]));
+      if (db[bomb].state <= 0){ removes.push(bomb); break};
+      if (db[bomb].state < 4){
         explode(bomb);
       };
+      if (db[bomb].state > 0){
+        db[bomb].state -= 1;
+      };
     };
-    for (var bomb in removes){
-      db.splice(bomb, 1)
-    }
+    for (var rem in removes){
+      db.splice(rem, 1)
+    };
 }
 
 function processBombs(){
@@ -73,7 +76,7 @@ function attack(attacker, npcsORplayers){
         }
       };
 
-      coredata.bombs.push({"pos": atpos, "state": "20", "owner": attacker});
+      coredata.bombs.push({"pos": atpos, "state": "23", "owner": attacker});
       console.log(attacker + " placed bomb");
 
     };
@@ -86,7 +89,7 @@ function explode(bomb) {
     posx = parseInt(dbomb.pos.split(".")[0]);
     posy = parseInt(dbomb.pos.split(".")[1]);
     console.log("boom @ " + dbomb.pos, posx, posy)
-    dodamage(dbomb.pos)
+    dodamage(dbomb.pos);
     bombAffect = [];
     //x
       //left
@@ -101,8 +104,8 @@ function explode(bomb) {
             dodamage(atpos);
           };
           if (lx !== posx - 3){
-            coredata.effects.push([atpos, "yellow"]);
-          } else {coredata.effects.push([atpos, "orange"]);};
+            coredata.effects.push("12" + "." + atpos);
+          } else {coredata.effects.push("13" + "." + atpos);};
         } else {
           break;
         };
@@ -119,8 +122,8 @@ function explode(bomb) {
             dodamage(atpos);
           };
           if (rx !== posx + 3){
-            coredata.effects.push([atpos, "yellow"]);
-          } else {coredata.effects.push([atpos, "orange"]);};
+            coredata.effects.push("12" + "." + atpos);
+          } else {coredata.effects.push("13" + "." + atpos);};
         } else {
           break;
         };
@@ -138,8 +141,8 @@ function explode(bomb) {
             dodamage(atpos);
           };
           if (uy !== posy - 3){
-            coredata.effects.push([atpos, "yellow"]);
-          } else {coredata.effects.push([atpos, "orange"]);};
+            coredata.effects.push("12" + "." + atpos);
+          } else {coredata.effects.push("13" + "." + atpos);};
         } else {
           break;
         };
@@ -156,8 +159,8 @@ function explode(bomb) {
             dodamage(atpos);
           };
           if (dy !== posy + 3){
-            coredata.effects.push([atpos, "yellow"]);
-          } else {coredata.effects.push([atpos, "orange"]);};
+            coredata.effects.push("12" + "." + atpos);
+          } else {coredata.effects.push("13" + "." + atpos);};
         } else {
           break;
         };
@@ -165,30 +168,30 @@ function explode(bomb) {
 };
 
 function dodamage(atpos){
-  db = coredata.players;
+  dp = coredata.players;
   damage = 100;
-  for (var key in db){
-    if (db.hasOwnProperty(key)) {
-      if (db[key].pos == atpos) {
-        db[key].health = db[key].health - damage;
-        if (db[key].health <= 0){
-          db[key].pos = db[key].origin;
-          db[key].health = 100;
-          console.log(db[key], ' killed at ', atpos)
+  for (var key in dp){
+    if (dp.hasOwnProperty(key)) {
+      if (dp[key].pos == atpos) {
+        dp[key].health = dp[key].health - damage;
+        if (dp[key].health <= 0){
+          dp[key].pos = dp[key].origin;
+          dp[key].health = 100;
+          console.log(dp[key], ' killed at ', atpos)
         };
       } ;
     };
   };
 
 
-  db = coredata.npcs;
-  for (var key in db){
-    if (db.hasOwnProperty(key)) {
-      if (db[key].pos == atpos){
-        db[key].health = db[key].health - damage;
-        if (db[key].health <= 0){
-          db[key].state = "dead";
-          console.log(db[key], ' killed at ', atpos)
+  dp = coredata.npcs;
+  for (var key in dp){
+    if (dp.hasOwnProperty(key)) {
+      if (dp[key].pos == atpos){
+        dp[key].health = dp[key].health - damage;
+        if (dp[key].health <= 0){
+          dp[key].state = "dead";
+          console.log(dp[key], ' killed at ', atpos)
         };
       }
     };
