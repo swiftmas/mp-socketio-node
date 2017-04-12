@@ -137,7 +137,7 @@ setInterval(function(){
   var db = coredata.bombs;
   for (var bomb in db){
     var code = db[bomb].state;
-    if (code >= 18 || code <= 11 && code >= 4 ){
+    if (code >= 16 || code <= 10 && code >= 6 ){
       code = 11;
     } else {
       code = 12;

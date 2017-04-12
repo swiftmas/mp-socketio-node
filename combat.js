@@ -25,8 +25,8 @@ function bombcontroller(){
     removes = [];
     for (var bomb = coredata.bombs.length -1; bomb >= 0; bomb--){
       console.log(JSON.stringify(db[bomb]));
-      if (db[bomb].state <= 0){ removes.push(bomb); break};
-      if (db[bomb].state < 4){
+      if (db[bomb].state <= 3){ removes.push(bomb); break};
+      if (db[bomb].state < 6){
         explode(bomb);
       };
       if (db[bomb].state > 0){
@@ -76,7 +76,7 @@ function attack(attacker, npcsORplayers){
         }
       };
 
-      coredata.bombs.push({"pos": atpos, "state": "23", "owner": attacker});
+      coredata.bombs.push({"pos": atpos, "state": "20", "owner": attacker});
       console.log(attacker + " placed bomb");
 
     };
