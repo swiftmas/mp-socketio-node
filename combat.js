@@ -1,8 +1,8 @@
-var globals = require('./globals.js');
-var coredata = globals.coredata;
-var collmap = globals.collmap;
-var mapchange = globals.mapchange;
-var attackQueue = globals.attackQueue;
+globals = require('./globals.js');
+coredata = globals.coredata;
+collmap = globals.collmap;
+mapchange = globals.mapchange;
+attackQueue = globals.attackQueue;
 
 ///// Exports ///////////////////////////
 module.exports = {

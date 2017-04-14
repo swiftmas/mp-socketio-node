@@ -112,10 +112,9 @@ server.listen(8080);
 
 //----------------------------/COOL STUFF /-----------------------------------------------------------------------//////////////
 ////VARS////
-var coredata = globals.coredata;
-var collmap = globals.collmap;
-var mapchange = globals.mapchange;
-var attackQueue = globals.attackQueue;
+coredata = globals.coredata;
+collmap = globals.collmap;
+attackQueue = globals.attackQueue;
 var listener = io.listen(server);
 
 //// Server Update ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +122,7 @@ setInterval(function(){
   coredata.effects = []
   combat.processBombs();
   combat.bombcontroller();
+
 
   ///////////////
   var datas = [];
@@ -160,23 +160,23 @@ listener.sockets.on('connection', function(socket){
     var playername = data[0]
     var dir = data[1]
     if (dir == "up"){
-  		x = parseInt(coredata.players[playername].pos.split(".")[0])
-  		y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1
+  		var x = parseInt(coredata.players[playername].pos.split(".")[0])
+  		var y = parseInt(coredata.players[playername].pos.split(".")[1]) - 1
   		cellname = ''+x+'.'+y+''
   	};
   	if (dir == "down"){
-  		x = parseInt(coredata.players[playername].pos.split(".")[0])
-  		y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
+  		var x = parseInt(coredata.players[playername].pos.split(".")[0])
+  		var y = parseInt(coredata.players[playername].pos.split(".")[1]) + 1
   		cellname = ''+x+'.'+y+''
   	};
   	if (dir == "left"){
-  		x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
-  		y = parseInt(coredata.players[playername].pos.split(".")[1])
+  		var x = parseInt(coredata.players[playername].pos.split(".")[0]) - 1
+  		var y = parseInt(coredata.players[playername].pos.split(".")[1])
   		cellname = ''+x+'.'+y+''
   	};
   	if (dir == "right"){
-  		x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
-  		y = parseInt(coredata.players[playername].pos.split(".")[1])
+  		var x = parseInt(coredata.players[playername].pos.split(".")[0]) + 1
+  		var y = parseInt(coredata.players[playername].pos.split(".")[1])
   		cellname = ''+x+'.'+y+''
   	};
 

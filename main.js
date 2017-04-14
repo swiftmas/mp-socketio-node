@@ -89,6 +89,14 @@ function draw(){
 				ctx.fillStyle = "green";
 				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
 			};
+			if (blk[0] == "03"){
+				ctx.fillStyle = "red";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
+			};
+			if (blk[0] == "04"){
+				ctx.fillStyle = "gold";
+				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
+			};
 			if (blk[0] == "11"){
 				ctx.fillStyle = "black";
 				ctx.fillRect(blk[1] -1, blk[2] -1, 1, 1);
@@ -203,7 +211,7 @@ document.addEventListener("touchmove", function(event) {
 	tmovx = Math.ceil((event.pageX));
  	tmovy = Math.ceil((event.pageY));
  	if (initialtouch == true){
- 		getswipedir(tmovx, tmovy);
+ 		//getswipedir(tmovx, tmovy);
  		initialtouch = false;
  		document.getElementById("logger").innerHTML = initialtouch
  	};
