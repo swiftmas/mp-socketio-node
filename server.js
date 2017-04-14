@@ -25,6 +25,9 @@ var server = http.createServer(function(request, response){
                 if (path.slice(-3) == "jpg"){
                     response.writeHead(200, {"Content-Type": "image/jpg"});
                 };
+                if (path.slice(-2) == ".html"){
+                    response.writeHead(200, {"Content-Type": "text/html"});
+                };
                 if (path.slice(-2) == "js"){
                     response.writeHead(200, {"Content-Type": "text/html"});
                 };
